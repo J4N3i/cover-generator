@@ -1,5 +1,5 @@
-# SLIIT Report Cover Page Generator 🎓
-**Version 2.0 — Chrome · Firefox · Safari**
+# Report Cover Page Generator 🎓
+**Version 1.0 — Chrome · Firefox · Safari**
 
 Instantly generate a professional SLIIT Faculty of Computing report cover page as **PDF** or **Word (.docx)** — matching the official template layout exactly.
 
