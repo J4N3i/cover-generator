@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>SLIIT Cover Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #080b14;
+      --s1:      #0e1220;
+      --s2:      #141929;
+      --s3:      #1a2035;
+      --border:  #1f2a42;
+      --border2: #273350;
+      --blue:    #4080ff;
+      --blue2:   #2d65e8;
+      --muted:   #6b7fa0;
+      --text:    #dce4f5;
+      --dim:     #4a5878;
+      --green:   #2ec97a;
+      --red:     #e05555;
+      --gold:    #c9a43a;
+      --r:       7px;
+      --r2:      11px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 420px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .hdr {
+      background: linear-gradient(160deg, #0c1428 0%, #0e1a3a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 13px;
+      display: flex; align-items: center; gap: 13px;
+      position: relative; overflow: hidden;
+    }
+    .hdr::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #4080ff44, var(--gold), #4080ff44, transparent);
+    }
+    .hdr-logo {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: var(--r2);
+      background: linear-gradient(145deg, #0a2060, #1a4acc);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(64,128,255,.4), inset 0 1px 0 rgba(255,255,255,.1);
+      font-weight: 800; font-size: 15px; color: #fff;
+      letter-spacing: -.5px;
+    }
+    .hdr-text h1 { font-size: 13px; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+    .hdr-text p  { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: .01em; }
+
+    /* ── PROGRESS DOTS ── */
+    .progress {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 8px 16px;
+      background: var(--s1); border-bottom: 1px solid var(--border);
+    }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border2); cursor: pointer;
+      transition: all .2s;
+    }
+    .dot.on  { background: var(--blue); transform: scale(1.3); }
+    .dot.done { background: var(--green); }
+    .dot-label {
+      font-size: 10px; color: var(--muted); letter-spacing: .04em;
+      text-transform: uppercase; margin: 0 4px;
+    }
+
+    /* ── PANELS ── */
+    .panel { display: none; padding: 16px 16px 8px; }
+    .panel.on { display: block; }
+
+    /* section heading */
+    .sh {
+      font-size: 9px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--dim);
+      margin: 14px 0 9px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sh::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .sh:first-child { margin-top: 0; }
+
+    /* field */
+    .f { margin-bottom: 9px; }
+    .f > label {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .req { color: var(--blue); font-size: 10px; }
+    .f input, .f select, .f textarea {
+      width: 100%;
+      background: var(--s3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; padding: 7.5px 11px; outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .f input::placeholder, .f textarea::placeholder { color: var(--dim); }
+    .f input:focus, .f select:focus, .f textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(64,128,255,.1);
+    }
+    .f select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7fa0' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      padding-right: 28px;
+    }
+    .f textarea { resize: vertical; min-height: 54px; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
+
+    /* hint text */
+    .hint { font-size: 10px; color: var(--dim); margin-top: 3px; }
+
+    /* ── LOGO ZONE ── */
+    .lz {
+      background: var(--s2);
+      border: 1.5px dashed var(--border2);
+      border-radius: var(--r2);
+      padding: 12px 13px;
+      transition: border-color .2s;
+    }
+    .lz.drag-over { border-color: var(--blue); }
+    .lp {
+      display: flex; align-items: center; gap: 12px;
+      min-height: 54px; margin-bottom: 10px;
+    }
+    .lp img { max-height: 52px; max-width: 120px; object-fit: contain; background: #fff; border-radius: 5px; padding: 3px; }
+    #lpTxt { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+    .la { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .lub {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--s1); border: 1px solid var(--border2);
+      border-radius: 6px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      padding: 5.5px 11px; cursor: pointer; white-space: nowrap;
+      transition: all .15s;
+    }
+    .lub:hover { border-color: var(--blue); color: var(--blue); }
+    .lcr { margin-top: 8px; }
+    .lclr {
+      background: none; border: none; color: var(--red);
+      font-size: 11px; cursor: pointer; padding: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .lclr:hover { text-decoration: underline; }
+
+
+    /* ── NAVIGATION ── */
+    .nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--s1);
+    }
+    .nav-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--s3); border: 1px solid var(--border2);
+      border-radius: var(--r); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 11.5px; font-weight: 500;
+      padding: 6px 14px; cursor: pointer; transition: all .15s;
+    }
+    .nav-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .nav-btn.primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      border-color: transparent; color: #fff;
+      box-shadow: 0 2px 10px rgba(64,128,255,.35);
+    }
+    .nav-btn.primary:hover { opacity: .9; }
+    .nav-step { font-size: 10px; color: var(--muted); }
+
+    /* ── FOOTER (action bar) ── */
+    .foot {
+      background: var(--s1); border-top: 1px solid var(--border);
+      padding: 12px 16px 14px;
+    }
+    .br { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .btn {
+      border: none; border-radius: var(--r);
+      padding: 10px 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: transform .12s, box-shadow .12s, opacity .12s;
+    }
+    .btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+    .btn:not(:disabled):hover  { transform: translateY(-1px); }
+    .btn:not(:disabled):active { transform: translateY(0); }
+    .bp  { background: linear-gradient(135deg, #c03030, #7a1a1a); color: #fff; box-shadow: 0 2px 10px rgba(192,48,48,.35); }
+    .bw  { background: linear-gradient(135deg, #1a56c4, #0c3898); color: #fff; box-shadow: 0 2px 10px rgba(26,86,196,.35); }
+    .bp:not(:disabled):hover { box-shadow: 0 4px 16px rgba(192,48,48,.5); }
+    .bw:not(:disabled):hover { box-shadow: 0 4px 16px rgba(26,86,196,.5); }
+    .mem-row { display: flex; align-items: center; gap: 9px; margin-top: 10px; }
+    .tog {
+      width: 32px; height: 18px; background: var(--border2);
+      border-radius: 9px; border: none; outline: none;
+      position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0;
+    }
+    .tog::after {
+      content: ''; position: absolute;
+      width: 12px; height: 12px; background: #fff;
+      border-radius: 50%; top: 3px; left: 3px; transition: transform .2s;
+    }
+    .tog.on { background: var(--blue); }
+    .tog.on::after { transform: translateX(14px); }
+    .ml { font-size: 11px; color: var(--muted); }
+
+    /* spinner */
+    .spin {
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,.25); border-top-color: #fff;
+      border-radius: 50%; animation: rot .6s linear infinite; display: none;
+    }
+    .loading .spin   { display: block; }
+    .loading .blbl   { display: none; }
+    @keyframes rot { to { transform: rotate(360deg); } }
+
+    /* toast */
+    .toast {
+      display: none; align-items: center; gap: 7px;
+      background: var(--s2); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 7px 10px;
+      margin-top: 9px; font-size: 11.5px;
+    }
+    .toast.on  { display: flex; animation: fi .2s ease; }
+    .toast.ok  { border-color: var(--green); color: var(--green); }
+    .toast.err { border-color: var(--red);   color: var(--red);   }
+    @keyframes fi { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+    /* validation highlight */
+    .f input.invalid, .f select.invalid { border-color: var(--red) !important; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">S</div>
+  <div class="hdr-text">
+    <h1>SLIIT Report Cover Generator</h1>
+    <p>Professional academic cover page · PDF &amp; Word</p>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress" id="progress">
+  <span class="dot-label" id="stepLabel">Step 1 of 4</span>
+</div>
+
+<!-- ── STEP 1: REPORT ── -->
+<div class="panel on" id="s1">
+  <div class="sh">Report Information</div>
+
+  <div class="f">
+    <label>Report / Assignment Title <span class="req">*</span></label>
+    <input type="text" id="reportTitle" placeholder="e.g. AI Accelerators for Edge Computing"/>
+  </div>
+
+  <div class="f">
+    <label>Report Type <span class="req">*</span></label>
+    <select id="reportType">
+      <option value="Lab Report">Lab Report</option>
+      <option value="Assignment">Assignment</option>
+      <option value="Technical Report">Technical Report</option>
+      <option value="Individual Assignment">Individual Assignment</option>
+      <option value="Group Assignment">Group Assignment</option>
+      <option value="Laboratory Report">Laboratory Report</option>
+      <option value="Mini Project">Mini Project</option>
+      <option value="Project Report">Project Report</option>
+      <option value="Research Report">Research Report</option>
+      <option value="Case Study">Case Study</option>
+      <option value="Final Year Project">Final Year Project</option>
+    </select>
+  </div>
+
+  <div class="sh">Submission</div>
+
+  <div class="g2">
+    <div class="f">
+      <label>Date of Submission</label>
+      <input type="date" id="subDate"/>
+    </div>
+    <div class="f">
+      <label>Academic Year &amp; Semester</label>
+      <select id="semester">
+        <option value="Year 1 — Semester 1">Y1 — S1</option>
+        <option value="Year 1 — Semester 2">Y1 — S2</option>
+        <option value="Year 2 — Semester 1">Y2 — S1</option>
+        <option value="Year 2 — Semester 2">Y2 — S2</option>
+        <option value="Year 3 — Semester 1" selected>Y3 — S1</option>
+        <option value="Year 3 — Semester 2">Y3 — S2</option>
+        <option value="Year 4 — Semester 1">Y4 — S1</option>
+        <option value="Year 4 — Semester 2">Y4 — S2</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 2: MODULE ── -->
+<div class="panel" id="s2">
+  <div class="sh">Module Details</div>
+
+  <div class="f">
+    <label>Module Name <span class="req">*</span></label>
+    <input type="text" id="modName" placeholder="e.g. Computer Organization and Architecture"/>
+  </div>
+
+  <div class="g2">
+    <div class="f">
+      <label>Module Code</label>
+      <input type="text" id="modCode" placeholder="e.g. SE2032"/>
+    </div>
+    <div class="f">
+      <label>Faculty</label>
+      <select id="faculty">
+        <option value="Faculty of Computing">Faculty of Computing</option>
+        <option value="Faculty of Engineering">Faculty of Engineering</option>
+        <option value="Faculty of Business">Faculty of Business</option>
+        <option value="Faculty of Architecture">Faculty of Architecture</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sh">Supervision</div>
+
+  <div class="f">
+    <label>Lecturer / Supervisor Name</label>
+    <input type="text" id="lecturer" placeholder="e.g. Dr. Tharaka Mohotte"/>
+  </div>
+</div>
+
+<!-- ── STEP 3: STUDENT ── -->
+<div class="panel" id="s3">
+  <div class="sh">Student Information</div>
+
+  <div class="f">
+    <label>Full Name <span class="req">*</span></label>
+    <input type="text" id="sName" placeholder="e.g. K.G.J. Vishwaprabha"/>
+  </div>
+
+  <div class="g2">
+    <div class="f">
+      <label>Student ID <span class="req">*</span></label>
+      <input type="text" id="sID" placeholder="e.g. IT23745988"/>
+    </div>
+    <div class="f">
+      <label>Index Number <span style="color:var(--dim);font-weight:400">(if applicable)</span></label>
+      <input type="text" id="indexNo" placeholder="e.g. 23001"/>
+    </div>
+  </div>
+
+  <div class="f">
+    <label>Degree Programme</label>
+    <select id="degree">
+      <option value="BSc (Hons) in Computer Science">BSc (Hons) in Computer Science</option>
+      <option value="BSc (Hons) in Information Technology">BSc (Hons) in Information Technology</option>
+      <option value="BSc (Hons) in Software Engineering">BSc (Hons) in Software Engineering</option>
+      <option value="BSc (Hons) in Data Science">BSc (Hons) in Data Science</option>
+      <option value="BSc (Hons) in Cybersecurity">BSc (Hons) in Cybersecurity</option>
+      <option value="BSc (Hons) in Information Systems">BSc (Hons) in Information Systems</option>
+      <option value="BEng (Hons) in Computer Engineering">BEng (Hons) in Computer Engineering</option>
+      <option value="BEng (Hons) in Electrical Engineering">BEng (Hons) in Electrical Engineering</option>
+    </select>
+  </div>
+
+  <div class="g2">
+    <div class="f">
+      <label>Group / Batch</label>
+      <input type="text" id="group" placeholder="e.g. Group 01 / WE.01"/>
+    </div>
+    <div class="f">
+      <label>Lab / Tutorial Group</label>
+      <input type="text" id="labGroup" placeholder="e.g. L01"/>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 4: LOGO ── -->
+<div class="panel" id="s4">
+  <div class="sh">University Logo</div>
+  <div class="lz" id="logoZone">
+    <div class="lp" id="logoPreview">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".25">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <div>
+        <div id="lpTxt" style="font-size:10.5px;color:var(--muted);">No logo uploaded</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px;">A professional placeholder will be used</div>
+      </div>
+    </div>
+    <div class="la">
+      <label class="lub" for="logoFile">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Choose image file
+      </label>
+      <input type="file" id="logoFile" accept="image/*" style="display:none"/>
+      <span style="font-size:10px;color:var(--dim);">PNG, JPG, SVG supported</span>
+    </div>
+    <div class="lcr" id="logoClearRow" style="display:none">
+      <button class="lclr" id="btnClearLogo">✕ Remove logo</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav" id="navBar">
+  <button class="nav-btn" id="btnBack" style="visibility:hidden">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </button>
+  <span class="nav-step" id="navStep">Report Details</span>
+  <button class="nav-btn primary" id="btnNext">
+    Next
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<!-- ACTION FOOTER -->
+<div class="foot" id="actionFoot" style="display:none">
+  <div class="br">
+    <button class="btn bp" id="btnPDF">
+      <span class="blbl" style="display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Download PDF
+      </span>
+      <span class="spin"></span>
+    </button>
+    <button class="btn bw" id="btnWord">
+      <span class="blbl" style="display:flex;align-items:center;gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Download Word
+      </span>
+      <span class="spin"></span>
+    </button>
+  </div>
+  <div class="mem-row">
+    <button class="tog" id="memTog"></button>
+    <span class="ml">Remember my details for next time</span>
+  </div>
+  <div class="toast" id="toast">
+    <svg id="toastIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"></svg>
+    <span id="toastMsg"></span>
+  </div>
+</div>
+
+<script src="lib/docx.min.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
